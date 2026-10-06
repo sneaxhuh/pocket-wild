@@ -22,11 +22,13 @@ TODO: Write 120–180 words in your own voice about your real test: where you sa
 
 ## Demo
 
-TODO: Add the publicly accessible deployed URL and a 60–90 second demo video. Demonstrate airplane mode **after reloading**, not just a model that was already in memory. Add screenshots of a real Gemma card and a field note, avoiding private information.
+Public app: [Pocket Wild on Render](https://pocket-wild.onrender.com/).
+
+TODO: Add a 60–90 second demo video. Demonstrate airplane mode **after reloading**, not just a model that was already in memory. Add screenshots of a real Gemma card and a field note, avoiding private information.
 
 ## Code
 
-TODO: Link the new public GitHub repository. Application code is MIT licensed; Gemma retains its own model terms. Include a link to the testing report and third-party notices.
+[Public GitHub repository](https://github.com/sneaxhuh/pocket-wild). Application code is MIT licensed; Gemma retains its own model terms. See the [testing report](https://github.com/sneaxhuh/pocket-wild/blob/main/docs/testing.md) and [third-party notices](https://github.com/sneaxhuh/pocket-wild/blob/main/THIRD_PARTY_NOTICES.md).
 
 ## How I Built It
 
@@ -42,9 +44,9 @@ The first model failed to load. Its newer quantized ONNX export used an operator
 
 The 270M model then ran quickly, yet invented scenery and expanded three observations into unsupported weather and sensations. I switched to 1B and tightened the field-card format and validation. This costs more download/storage, but the test cases produced more relevant instructions and a much more restrained reflection. It is still a small model, so original observations remain visible in the evidence and the reflection is editable.
 
-On the tested Mac, three contextual cards took 0.797–0.879 seconds. A fixture reflection took 0.544 seconds. With the browser offline, reloading the app and loading the model from cache took 1.480 seconds, followed by a new card in 0.979 seconds. The full offline UI flow, exported evidence, and journal reload passed with no browser errors or failed requests. These are automated indoor fixtures, not outdoor observations; they are not phone performance claims. The first download remains the slower part.
+On the public Render deployment, three contextual cards took 0.825 / 0.814 / 0.890 seconds on the tested Mac. A fixture reflection took 0.550 seconds. With the browser offline, reloading the app and loading the model from cache took 1.652 seconds, followed by a new card in 0.886 seconds. The full offline UI flow, exported evidence, and journal reload passed with no browser errors or failed requests. These are automated indoor fixtures, not outdoor observations; they are not phone performance claims. The first download remains the slower part.
 
-I also used constrained JSON decoding to enforce exactly three mission fields. That exposed a tokenizer/logits vocabulary mismatch, fixed with a grammar-only adapter. A cold offline test caught a separate metadata request to the mutable `main` branch; pinning the URL template as well as the model options removed it. The [testing notes and raw evidence](TODO_PUBLIC_REPO_TESTING_LINK) show both the fixes and the remaining output limitations.
+I also used constrained JSON decoding to enforce exactly three mission fields. That exposed a tokenizer/logits vocabulary mismatch, fixed with a grammar-only adapter. A cold offline test caught a separate metadata request to the mutable `main` branch; pinning the URL template as well as the model options removed it. The [testing notes and reviewed evidence](https://github.com/sneaxhuh/pocket-wild/blob/main/docs/testing.md) show both the fixes and the remaining output limitations.
 
 The preset engine is a separate, explicitly chosen option for incompatible devices—not a hidden substitute presented as AI. Rejected model cards do not silently become preset cards.
 
@@ -63,7 +65,7 @@ I used Codex to help implement and test the project. TODO: Optionally add a revi
 ## Prize Categories
 
 - **Best Use of Gemma:** Gemma generates the field card and the observation-based draft locally; the evidence records actual inference.
-- TODO: **Best Use of Render**, only if the public front end is genuinely deployed there. Describe the live deployment, not only the Blueprint file.
-- TODO: Consider **Best Use of GitHub Copilot** only after the included GitHub Actions workflow actually runs, and explain precisely that the usage is Actions—not Copilot generation. Remove this item if not entering.
+- **Best Use of Render:** the public front end is a live Render Static Site built from the public GitHub repository. It serves the complete offline app and inference runtime; no hosted inference server is needed.
+- **Best Use of GitHub Copilot (GitHub Actions criterion):** the repository's Actions workflow has actually passed unit, build, and browser checks. This describes Actions usage under the challenge's published criterion, not Copilot-generated code; Codex helped build the project.
 
 TODO: Credit any human teammates by DEV handle. Review the article, replace every TODO, and publish with the required challenge tags before the deadline.

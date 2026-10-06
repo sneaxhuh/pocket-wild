@@ -2,6 +2,8 @@
 
 Three things to notice. Then put your phone away.
 
+[Open Pocket Wild](https://pocket-wild.onrender.com/) · [Public source](https://github.com/sneaxhuh/pocket-wild)
+
 Pocket Wild is a device-local nature-walk companion built during the [2026 Hacktoberfest Week 1: Touch Grass challenge](https://dev.to/challenges/hacktoberfest-week1-2026-10-05). Gemma creates a pocket field card from your surroundings and turns your real observations into an editable field note. There is no chat feed, account, hosted inference API, geolocation, or species-identification claim.
 
 ## Try the loop
@@ -36,7 +38,9 @@ npm run test:browser
 npm run test:model
 ```
 
-On this Mac the browser tests use installed Brave. Elsewhere set `POCKET_WILD_BROWSER` to your Chromium executable. The model probe uses an isolated persistent browser profile (`POCKET_WILD_PROFILE`) and saves its measured results under `artifacts/`; it never uses your personal browser profile. Ordinary browser tests do not download a model. Real-model and outdoor checks are separate; see [testing](docs/testing.md).
+On this Mac the ordinary browser tests use installed Brave. The model probe prefers Playwright's installed Chromium build, falling back to Brave when it is unavailable. Set `POCKET_WILD_BROWSER` to override the executable. The model probe uses an isolated persistent browser profile (`POCKET_WILD_PROFILE`) and saves its measured results under `artifacts/`; it never uses your personal browser profile. Ordinary browser tests do not download a model. Real-model and outdoor checks are separate; see [testing](docs/testing.md).
+
+To run the same real-model probe against the public deployment, set `POCKET_WILD_URL=https://pocket-wild.onrender.com/` before `npm run test:model`. The report records the tested origin. Model storage is origin-specific, so the first hosted-origin test downloads the weights again.
 
 ## AI architecture
 
@@ -62,7 +66,7 @@ Small models can still invent details. Original observations are preserved separ
 
 ## Deploy and submit
 
-[Deployment instructions](docs/deployment.md) cover a public Render Static Site using `render.yaml`. Only claim the Render category after that deployment actually succeeds. The existing Sites preview is private and is not a judge-accessible public demo.
+[The public Render app](https://pocket-wild.onrender.com/) is deployed from the public repository. [Deployment instructions](docs/deployment.md) record its settings and the alternative `render.yaml` Blueprint. The separate Sites preview remains private; use the public Render link for judging.
 
 [Submission checklist](docs/submission-checklist.md), [DEV draft](docs/dev-submission.md), and [demo script](docs/demo-script.md) are included. The draft contains clearly marked fields for public links and **your real outdoor results**; do not publish it unchanged. Challenge code began on October 5, 2026. Any changes after the deadline must be documented here.
 

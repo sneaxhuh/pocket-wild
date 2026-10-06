@@ -81,6 +81,25 @@ test('Gemma selection requires real model readiness and never silently falls bac
   await expect(page.locator('#screen-missions')).toBeHidden();
 });
 
+test('evidence downloads as valid JSON while offline', async ({ page, context }) => {
+  await presetCard(page);
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.waitForFunction(() => !!navigator.serviceWorker.controller);
+  await page.locator('#begin-walk').click(); await page.locator('#finish-walk').click();
+  await page.getByRole('textbox', { name: 'Observation 1', exact: true }).fill('Automated offline export fixture.');
+  await page.getByRole('button', { name: 'MAKE MY FIELD NOTE' }).click();
+  await context.setOffline(true);
+  await page.locator('.evidence summary').click();
+  const event = page.waitForEvent('download'); await page.locator('#download-evidence').click();
+  const download = await event;
+  expect(await download.failure()).toBeNull();
+  const stream = await download.createReadStream();
+  const chunks = []; for await (const chunk of stream) chunks.push(chunk);
+  const evidence = JSON.parse(Buffer.concat(chunks).toString());
+  expect(evidence.missionProvenance.engine).toBe('preset');
+  expect(evidence.observations[0].text).toBe('Automated offline export fixture.');
+});
+
 test('layout fits narrow and desktop viewports and keyboard can select a duration', async ({ page }) => {
   await page.goto('/');
   for (const width of [320, 390, 840, 1280]) {

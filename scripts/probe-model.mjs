@@ -5,10 +5,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const brave = '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser';
-const executablePath = process.env.POCKET_WILD_BROWSER || (existsSync(brave) ? brave : undefined);
-const profile = process.env.POCKET_WILD_PROFILE || (process.platform === 'darwin' ? '/private/tmp/pocket-wild-model-probe-v2' : path.join(tmpdir(), 'pocket-wild-model-probe'));
+const bundledChromium = chromium.executablePath();
+const executablePath = process.env.POCKET_WILD_BROWSER || (existsSync(bundledChromium) ? bundledChromium : existsSync(brave) ? brave : undefined);
+const baseURL = new URL(process.env.POCKET_WILD_URL || 'http://127.0.0.1:4173/').href;
+const profileName = executablePath === brave ? 'pocket-wild-model-probe-v2' : 'pocket-wild-model-probe-chromium';
+const profile = process.env.POCKET_WILD_PROFILE || (process.platform === 'darwin' && executablePath === brave ? '/private/tmp/pocket-wild-model-probe-v2' : path.join(tmpdir(), profileName));
 const context = await chromium.launchPersistentContext(profile, { executablePath, headless: true, args: ['--enable-unsafe-webgpu', ...(process.platform === 'darwin' ? ['--use-angle=metal'] : [])], viewport: { width: 390, height: 844 } });
-const page = await context.newPage();
+const page = context.pages()[0] || await context.newPage();
 const errors = [];
 const failedRequests = [];
 let closing = false;
@@ -22,7 +25,7 @@ let lastProgress = 0;
 await page.exposeFunction('reportProgress', data => {
   if (Date.now() - lastProgress > 10000) { console.log(data.message); lastProgress = Date.now(); }
 });
-await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
+await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
 await page.evaluate(async () => {
   const registration = await navigator.serviceWorker.ready;
   await registration.update();
@@ -30,7 +33,7 @@ await page.evaluate(async () => {
   if (next && next.state !== 'activated') await new Promise(resolve => next.addEventListener('statechange', () => { if (['activated', 'redundant'].includes(next.state)) resolve(); }));
 });
 await page.reload({ waitUntil: 'domcontentloaded' });
-const report = { checkedAt: new Date().toISOString(), browser: context.browser()?.version(), errors, failedRequests, cases: [] };
+const report = { checkedAt: new Date().toISOString(), origin: new URL(page.url()).origin, browser: context.browser()?.version(), errors, failedRequests, cases: [] };
 try {
   report.device = await page.evaluate(async () => ({ userAgent: navigator.userAgent, webgpu: !!navigator.gpu, adapter: !!(await navigator.gpu?.requestAdapter()) }));
   console.log(JSON.stringify(report.device));
