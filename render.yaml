@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: pocket-wild
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: 22.21.0
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache

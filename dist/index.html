@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10140f">
+  <meta name="description" content="An offline, eyes-up nature walk companion built for on-device open models.">
+  <title>Pocket Wild</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310140f'/%3E%3Cpath d='M17 42c7-1 12-5 15-12 5 5 10 8 16 8-7 10-17 14-31 4Z' fill='%23c8ff45'/%3E%3Cpath d='M32 47V25' stroke='%23f2f2e9' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <main class="app-shell">
+    <header class="topbar">
+      <button id="home-button" class="brand" type="button" aria-label="Pocket Wild home">
+        <span class="brand-mark" aria-hidden="true">PW</span>
+        <span>POCKET WILD</span>
+      </button>
+      <div class="status-cluster">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="network-status">OFFLINE READY</span>
+      </div>
+    </header>
+    <div id="offline-indicator" class="offline-banner" hidden>No connection. Your saved walks stay here.</div>
+    <p id="app-message" class="app-message" role="status" aria-live="polite" hidden></p>
+    <div id="operation" class="operation" hidden>
+      <span class="operation-spinner" aria-hidden="true"></span><span id="operation-label"></span>
+      <button id="cancel-model" class="text-action" type="button">Cancel</button>
+    </div>
+
+    <section id="screen-setup" class="screen active" aria-labelledby="setup-title">
+      <div class="eyebrow"><span>FIELD MODE 01</span><span id="local-date"></span></div>
+      <div class="hero-grid">
+        <div>
+          <h1 id="setup-title" tabindex="-1">Less screen.<br><em>More world.</em></h1>
+          <p class="intro">Pick a little time. Pocket Wild will make three things worth noticing, then disappear.</p>
+        </div>
+        <div class="sun-dial" aria-hidden="true">
+          <div class="sun-core"><span>OUT</span><span>THERE</span></div>
+        </div>
+      </div>
+      <div id="resume-panel" class="resume-panel" hidden>
+        <span>You have a saved walk.</span><button id="resume-walk" type="button" class="model-button">RESUME WALK</button>
+        <button id="discard-draft" type="button" class="text-action">Discard this unfinished walk</button>
+      </div>
+
+      <form id="walk-form" class="control-panel">
+        <aside class="model-panel" aria-labelledby="model-title">
+          <div class="model-copy">
+            <span class="model-kicker">GEMMA · YOUR DEVICE</span>
+            <strong id="model-title">Bring a little intelligence.</strong>
+            <small id="model-status">Gemma 3 1B · one download, about 900 MB. Use Wi-Fi. Then your walks and notes are generated here, without an account.</small>
+            <progress id="model-progress" max="100" value="0" hidden aria-label="Gemma download progress"></progress>
+          </div>
+          <button id="load-gemma" class="model-button" type="button">DOWNLOAD GEMMA</button>
+        </aside>
+
+        <fieldset class="full-width">
+          <legend>What is around you?</legend>
+          <div class="setting-grid">
+            <label>Place<select name="place" id="place"><option value="neighborhood">Neighborhood</option><option value="park">Park</option><option value="garden">Garden</option><option value="trail">Familiar trail</option></select></label>
+            <label>A detail, if you like<input name="context" maxlength="160" placeholder="Trees, a bench, orange flowers…"></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>How long can you wander?</legend>
+          <div class="duration-grid">
+            <label><input type="radio" name="duration" value="10"><span><b>10</b><small>MIN</small></span></label>
+            <label><input type="radio" name="duration" value="20" checked><span><b>20</b><small>MIN</small></span></label>
+            <label><input type="radio" name="duration" value="30"><span><b>30</b><small>MIN</small></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>What kind of noticing?</legend>
+          <div class="mood-grid">
+            <label><input type="radio" name="mood" value="quiet" checked><span>QUIET</span></label>
+            <label><input type="radio" name="mood" value="curious"><span>CURIOUS</span></label>
+            <label><input type="radio" name="mood" value="playful"><span>PLAYFUL</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="full-width engine-choice">
+          <legend>Make my field card with</legend>
+          <label><input id="engine-gemma" type="radio" name="engine" value="gemma" checked> Gemma on this device</label>
+          <label><input id="engine-preset" type="radio" name="engine" value="preset"> Preset card</label>
+        </fieldset>
+
+        <button class="primary-action" type="submit">
+          <span>MAKE MY WALK</span>
+          <span class="action-icon" aria-hidden="true">✦</span>
+        </button>
+        <p id="engine-note" class="model-note">Download Gemma for a walk shaped by your surroundings.</p>
+      </form>
+    </section>
+
+    <section id="screen-missions" class="screen" aria-labelledby="missions-title" hidden>
+      <div class="eyebrow"><span>YOUR FIELD CARD</span><span id="mission-duration"></span></div>
+      <h2 id="missions-title" tabindex="-1">Three things.<br><em>Then pocket this.</em></h2>
+      <ol id="mission-list" class="mission-list"></ol>
+      <p id="mission-source" class="source-label"></p>
+      <p class="practical-note">Use only what is actually present; skip anything that does not fit. Stay on familiar paths and observe without collecting. A seated outdoor pause counts too.</p>
+      <button id="begin-walk" class="primary-action" type="button"><span>START WALK</span><span class="action-icon" aria-hidden="true">◉</span></button>
+      <button class="text-action" data-action="home" type="button">Back home · this card stays saved</button>
+    </section>
+
+    <section id="screen-walk" class="screen walk-screen" aria-labelledby="walk-title" hidden>
+      <div class="walk-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="eyebrow center">POCKET MODE</p>
+      <h2 id="walk-title" tabindex="-1">Look up.</h2>
+      <p id="walk-sub" class="walk-sub">Lock your phone. The walk keeps time while this app is away.</p>
+      <div id="walk-timer" class="timer" role="timer">20:00</div>
+      <button id="read-card" class="secondary-action" type="button">Read my three missions</button>
+      <details id="pocket-missions"><summary>View the field card</summary><ol id="pocket-card"></ol></details>
+      <button id="finish-walk" class="primary-action coral" type="button"><span>I'M BACK</span><span class="action-icon" aria-hidden="true">✓</span></button>
+    </section>
+
+    <section id="screen-observe" class="screen" aria-labelledby="observe-title" hidden>
+      <div class="eyebrow"><span>FIELD NOTES</span><span>STAYS ON THIS DEVICE</span></div>
+      <h2 id="observe-title" tabindex="-1">What found <em>you?</em></h2>
+      <p class="intro compact">One line is enough. A photo is optional.</p>
+      <label class="note-engine-label">Your field note<select id="note-engine"><option value="gemma">Let Gemma reflect on my words</option><option value="verbatim">Keep my exact words</option></select></label>
+      <form id="observation-form" class="observation-form"></form>
+    </section>
+
+    <section id="screen-summary" class="screen" aria-labelledby="summary-title" hidden>
+      <div class="eyebrow"><span>FIELD NOTE COMPLETE</span><span id="summary-date"></span></div>
+      <h2 id="summary-title" tabindex="-1">You went<br><em>out there.</em></h2>
+      <div class="score-strip">
+        <div><b id="outside-stat">00:00</b><span>WALK TIME</span></div>
+        <div><b id="screen-stat">00:00</b><span>APP VISIBLE</span></div>
+        <div><b id="ratio-stat">—</b><span>AWAY FROM APP</span></div>
+      </div>
+      <p class="measurement-note">Time runs from Start to “I'm back.” Away means this app was hidden; it cannot measure your location or use of other apps.</p>
+      <article class="field-note">
+        <span class="field-stamp">LOCAL FIELD NOTE</span>
+        <p id="field-note-copy"></p>
+      </article>
+      <p id="note-source" class="source-label"></p>
+      <p id="reflection-warning" class="practical-note" hidden>Check your reflection. Small models can add details; your original observations are saved separately.</p>
+      <div id="summary-photos" class="summary-photos"></div>
+      <details class="edit-note"><summary>Edit your field note</summary><label for="edit-note">Your final words</label><textarea id="edit-note" rows="5" maxlength="2000"></textarea><button id="save-edit" class="secondary-action" type="button">Save my edit</button></details>
+      <button id="download-note" class="secondary-action" type="button">Save field note</button>
+      <details class="evidence"><summary>Model & timing evidence</summary><pre id="evidence-details"></pre><button id="download-evidence" class="secondary-action" type="button">Download evidence JSON</button></details>
+      <button class="primary-action" data-action="home" type="button"><span>WANDER AGAIN</span><span class="action-icon" aria-hidden="true">↺</span></button>
+    </section>
+    <footer class="app-footer">
+      <button id="journal-open" class="text-action" type="button">Field journal <span id="journal-count">0</span></button>
+      <details><summary>Privacy & offline</summary><p>Walks, observations, and photos are saved in this browser. Gemma is a text model: it does not analyze your photos. You can export notes and inference evidence.</p><p>First use downloads the model from Hugging Face. Later inference runs on your device. This app includes its own runtime; there is no hosted inference API.</p><p id="offline-status">Preparing offline app storage…</p><p>Clearing browser storage also clears this journal and downloaded model. Device voices depend on your installed speech pack.</p></details>
+    </footer>
+  </main>
+
+  <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="dialog-header"><h2 id="journal-title">Field journal</h2><button id="journal-close" class="model-button" type="button">CLOSE</button></div><p id="journal-empty">Your first walk will live here. All entries stay on this device.</p><div id="journal-list"></div></dialog>
+
+  <template id="mission-template">
+    <li class="mission-card">
+      <span class="mission-index"></span>
+      <div><span class="mission-sense"></span><p class="mission-text"></p></div>
+      <span class="mission-mark" aria-hidden="true"></span>
+    </li>
+  </template>
+
+  <template id="observation-template">
+    <fieldset class="observation-card">
+      <legend></legend>
+      <p class="observation-prompt"></p>
+      <label class="note-input"><span>Your observation</span><textarea rows="3" maxlength="400" placeholder="A detail you almost missed…"></textarea></label>
+      <label class="photo-input"><input type="file" accept="image/*" capture="environment"><span>＋ Add a photo</span></label>
+      <img class="photo-preview" alt="Your locally saved field photograph" hidden>
+    </fieldset>
+  </template>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

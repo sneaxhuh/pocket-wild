@@ -1,0 +1,12 @@
+{
+  "name": "Pocket Wild",
+  "short_name": "Pocket Wild",
+  "description": "An offline, eyes-up nature walk companion.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#10140f",
+  "theme_color": "#10140f",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

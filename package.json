@@ -1,0 +1,25 @@
+{
+  "name": "pocket-wild",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private nature walks powered by on-device Gemma",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:model": "node scripts/probe-model.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "4.3.0",
+    "@huggingface/transformers-structured-output": "4.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "esbuild": "0.25.10"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

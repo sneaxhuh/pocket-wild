@@ -1,0 +1,12 @@
+node_modules/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+.DS_Store
+.sites-runtime/
+dist/vendor/
+dist/model-worker.js
+artifacts/runtime-results*.json
+artifacts/ui/
